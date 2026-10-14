@@ -329,9 +329,25 @@
   <button class="reset-btn" onclick="resetWeek()">Reset this week</button>
 </div>
 
-<div style="padding: 0 16px; margin-top: 32px;">
-  <div class="section-label" style="margin-bottom: 12px;">📅 Workout History</div>
-  <div id="historyLog" style="display:flex; flex-direction:column; gap:10px;"></div>
+<div style="padding: 0 16px; margin-top: 32px; padding-bottom: 40px;">
+  <div class="section-label" style="margin-bottom: 4px;">📅 Workout History</div>
+  <div style="font-size:11px; color:var(--warm-gray); margin-bottom:16px; padding-left:4px;">Every day since June — tap a square to see what it was</div>
+  <div id="historyGrid"></div>
+  <div id="historyTooltip" style="display:none; background:var(--dark); color:white; padding:8px 14px; border-radius:10px; font-size:12px; margin-top:12px; text-align:center; line-height:1.5;"></div>
+  <div style="display:flex; gap:16px; margin-top:16px; padding-left:4px; flex-wrap:wrap;">
+    <div style="display:flex; align-items:center; gap:6px; font-size:11px; color:var(--warm-gray);">
+      <div style="width:14px;height:14px;border-radius:3px;background:var(--rose);"></div> Lifting
+    </div>
+    <div style="display:flex; align-items:center; gap:6px; font-size:11px; color:var(--warm-gray);">
+      <div style="width:14px;height:14px;border-radius:3px;background:var(--sage);"></div> Hot yoga / Pilates
+    </div>
+    <div style="display:flex; align-items:center; gap:6px; font-size:11px; color:var(--warm-gray);">
+      <div style="width:14px;height:14px;border-radius:3px;background:#c87941;"></div> Running
+    </div>
+    <div style="display:flex; align-items:center; gap:6px; font-size:11px; color:var(--warm-gray);">
+      <div style="width:14px;height:14px;border-radius:3px;background:var(--border);border:1px solid #ccc;"></div> Rest
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -487,13 +503,13 @@ function renderDays() {
     html += `</div></div>`;
   });
 
-  html += '<div class="section-label" style="margin-top:16px;">Hot yoga vinyasa</div>';
+  html += '<div class="section-label" style="margin-top:16px;">Hot yoga / Pilates</div>';
   for (let i = 0; i < YOGA_DAYS; i++) {
     const done = i < state.yoga;
     html += `<div class="yoga-card ${done ? 'done' : ''}" onclick="toggleYoga()">
       <div class="yoga-dot">${done ? '🧘' : '🧘'}</div>
       <div class="yoga-info">
-        <div class="yoga-name">Hot yoga vinyasa — session ${i+1}</div>
+        <div class="yoga-name">Hot yoga / Pilates — session ${i+1}</div>
         <div class="yoga-detail">60 min · hydrate well before and after</div>
       </div>
       <div class="yoga-check"></div>
@@ -557,50 +573,161 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-// ── Workout History (logged by Claude) ──────────────────────────────
-const HISTORY = [
-  {
-    week: 'Week of Sep 29',
-    entries: [
-      { date: 'Mon Sep 29', type: 'lift', label: 'Full Body A', icon: '🏋️' },
-      { date: 'Wed Oct 1',  type: 'lift', label: 'Full Body B', icon: '🏋️' },
-      { date: 'Thu Oct 2',  type: 'yoga', label: 'Power Mat Pilates', icon: '🧘' },
-    ]
-  },
-  {
-    week: 'Week of Oct 5',
-    entries: [
-      { date: 'Sun Oct 5',  type: 'lift', label: 'Full Body A', icon: '🏋️' },
-      { date: 'Tue Oct 7',  type: 'lift', label: 'Full Body B', icon: '🏋️' },
-      { date: 'Fri Oct 10', type: 'yoga', label: 'Power Mat Pilates', icon: '🧘' },
-    ]
-  },
-  {
-    week: 'Week of Oct 13',
-    entries: [
-      { date: 'Wed Oct 14', type: 'lift', label: 'Full Body C (planned tonight)', icon: '🏋️' },
-    ]
-  },
-];
+// ── Workout History Grid (logged by Claude) ──────────────────────────
+// type: 'lift' | 'yoga' | null
+// WORKOUT_LOG — confirmed from calendar screenshots
+const WORKOUT_LOG = {
+  // June 2026
+  '2026-06-01': { type: 'yoga', label: 'Vinyasa Flow' },
+  '2026-06-05': { type: 'lift', label: 'Full Body A' },
+  '2026-06-06': { type: 'yoga', label: 'Vinyasa Flow' },
+  '2026-06-08': { type: 'lift', label: 'Full Body A' },
+  '2026-06-09': { type: 'yoga', label: 'Vinyasa Flow' },
+  '2026-06-11': { type: 'yoga', label: 'Vinyasa Flow' },
+  '2026-06-12': { type: 'lift', label: 'Full Body B' },
+  '2026-06-15': { type: 'lift', label: 'Full Body C' },
+  '2026-06-16': { type: 'yoga', label: 'Vinyasa Flow + Core Breathing' },
+  '2026-06-18': { type: 'yoga', label: 'Vinyasa Flow' },
+  '2026-06-19': { type: 'lift', label: 'Full Body B' },
+  '2026-06-22': { type: 'lift', label: 'Full Body A' },
+  '2026-06-23': { type: 'yoga', label: 'Power Mat Pilates' },
+  '2026-06-24': { type: 'lift', label: 'Full Body B' },
+  '2026-06-25': { type: 'lift', label: 'Full Body C' },
+  '2026-06-26': { type: 'yoga', label: 'Power Mat Pilates' },
+  // June 29 — St. Padre trip, no workouts
+  // July 2026
+  '2026-07-04': { type: 'yoga', label: 'Power Mat Pilates' },
+  '2026-07-05': { type: 'lift', label: 'Full Body A' },
+  '2026-07-07': { type: 'yoga', label: 'Power Mat Pilates' },
+  '2026-07-08': { type: 'lift', label: 'Full Body B' },
+  // Jul 10–12 Boston/Salem trip
+  '2026-07-16': { type: 'run', label: 'Running — W2 D1' },
+  '2026-07-17': { type: 'run', label: 'Running + Power Mat Pilates' },
+  '2026-07-19': { type: 'yoga', label: 'Power Mat Pilates' },
+  '2026-07-21': { type: 'lift', label: 'Full Body A' },
+  '2026-07-22': { type: 'lift', label: 'Full Body B' },
+  '2026-07-24': { type: 'yoga', label: 'Power Mat Pilates' },
+  '2026-07-26': { type: 'yoga', label: 'Power Mat Pilates' },
+  // August 2026
+  '2026-08-01': { type: 'yoga', label: 'Power Mat Pilates' },
+  '2026-08-02': { type: 'yoga', label: 'Power Mat Pilates' },
+  '2026-08-05': { type: 'yoga', label: 'Power Mat Pilates' },
+  '2026-08-07': { type: 'yoga', label: 'Power Mat Pilates' },
+  '2026-08-09': { type: 'yoga', label: 'Power Mat Pilates' },
+  '2026-08-14': { type: 'lift', label: 'Full Body C' },
+  '2026-08-16': { type: 'yoga', label: 'Power Mat Pilates' },
+  '2026-08-19': { type: 'lift', label: 'Full Body A' },
+  '2026-08-20': { type: 'lift', label: 'Full Body B' },
+  '2026-08-28': { type: 'lift', label: 'Full Body C' },
+  '2026-08-30': { type: 'lift', label: 'Full Body A' },
+  // September 2026
+  '2026-09-01': { type: 'lift', label: 'Full Body A' },
+  '2026-09-02': { type: 'lift', label: 'Full Body B' },
+  '2026-09-05': { type: 'yoga', label: 'Power Mat Pilates' },
+  '2026-09-06': { type: 'yoga', label: 'Power Mat Pilates' },
+  '2026-09-08': { type: 'lift', label: 'Full Body C' },
+  '2026-09-09': { type: 'lift', label: 'Full Body A' },
+  '2026-09-10': { type: 'lift', label: 'Full Body B' },
+  '2026-09-13': { type: 'run', label: 'Running — 2.5 Miles' },
+  '2026-09-14': { type: 'run', label: 'Running — 2.5 Miles' },
+  '2026-09-17': { type: 'lift', label: 'Full Body C' },
+  '2026-09-21': { type: 'lift', label: 'Full Body A' },
+  '2026-09-22': { type: 'lift', label: 'Full Body B' },
+  '2026-09-23': { type: 'lift', label: 'Full Body C' },
+  // October 2026
+  '2026-10-04': { type: 'lift', label: 'Full Body A' },
+  '2026-10-07': { type: 'lift', label: 'Full Body B' },
+  '2026-10-09': { type: 'yoga', label: 'Power Mat Pilates' },
+  '2026-10-14': { type: 'lift', label: 'Full Body C' },
+};
 
 function renderHistory() {
-  const container = document.getElementById('historyLog');
+  const container = document.getElementById('historyGrid');
+  const months = [
+    { label: 'Jun', year: 2026, month: 5 },
+    { label: 'Jul', year: 2026, month: 6 },
+    { label: 'Aug', year: 2026, month: 7 },
+    { label: 'Sep', year: 2026, month: 8 },
+    { label: 'Oct', year: 2026, month: 9 },
+  ];
+
   let html = '';
-  HISTORY.slice().reverse().forEach(week => {
-    html += `<div style="background:white; border-radius:12px; padding:14px 16px; box-shadow:0 2px 8px rgba(0,0,0,0.06); border-left:4px solid var(--rose-light);">
-      <div style="font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--warm-gray); margin-bottom:8px;">${week.week}</div>
-      <div style="display:flex; flex-direction:column; gap:5px;">`;
-    week.entries.forEach(e => {
-      const color = e.type === 'lift' ? 'var(--rose)' : 'var(--sage)';
-      html += `<div style="display:flex; align-items:center; gap:10px; font-size:13px;">
-        <span style="font-size:1rem;">${e.icon}</span>
-        <span style="color:var(--warm-gray); min-width:80px;">${e.date}</span>
-        <span style="font-weight:500; color:${color};">${e.label}</span>
-      </div>`;
-    });
+  months.forEach(m => {
+    const daysInMonth = new Date(m.year, m.month + 1, 0).getDate();
+    const today = new Date().toISOString().slice(0,10);
+    let lifts = 0, yoga = 0, runs = 0;
+
+    // Count totals for completed days
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = `${m.year}-${String(m.month + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      if (dateStr > today) continue;
+      const entry = WORKOUT_LOG[dateStr];
+      if (!entry) continue;
+      if (entry.type === 'lift') lifts++;
+      else if (entry.type === 'yoga') yoga++;
+      else if (entry.type === 'run') runs++;
+    }
+
+    let totalsHtml = `<span style="color:var(--rose);font-weight:600;">${lifts} lift${lifts !== 1 ? 's' : ''}</span>`;
+    totalsHtml += ` · <span style="color:var(--sage);font-weight:600;">${yoga} yoga</span>`;
+    if (runs > 0) totalsHtml += ` · <span style="color:#c87941;font-weight:600;">${runs} run${runs !== 1 ? 's' : ''}</span>`;
+
+    html += `<div style="margin-bottom:22px;">
+      <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px;padding-left:2px;">
+        <span style="font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--warm-gray);">${m.label} ${m.year}</span>
+        <span style="font-size:11px;">${totalsHtml}</span>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:4px;">`;
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = `${m.year}-${String(m.month + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const entry = WORKOUT_LOG[dateStr];
+      const isFuture = dateStr > today;
+      let bg, border;
+      if (isFuture) {
+        bg = 'transparent'; border = '1px dashed #ddd';
+      } else if (!entry) {
+        bg = '#ede9e3'; border = '1px solid #ddd';
+      } else if (entry.type === 'lift') {
+        bg = 'var(--rose)'; border = 'none';
+      } else if (entry.type === 'run') {
+        bg = '#c87941'; border = 'none';
+      } else {
+        bg = 'var(--sage)'; border = 'none';
+      }
+
+      html += `<div
+        title="${dateStr}"
+        data-date="${dateStr}"
+        data-label="${entry ? entry.label : ''}"
+        style="width:28px;height:28px;border-radius:5px;background:${bg};border:${border};cursor:${entry ? 'pointer' : 'default'};display:flex;align-items:center;justify-content:center;font-size:10px;color:${entry ? 'white' : '#aaa'};font-weight:500;transition:transform 0.1s;"
+        onmouseenter="showTip(this)"
+        onmouseleave="hideTip()"
+        onclick="showTip(this, true)"
+      >${d}</div>`;
+    }
     html += `</div></div>`;
   });
+
   container.innerHTML = html;
+}
+
+function showTip(el, sticky) {
+  const tooltip = document.getElementById('historyTooltip');
+  const label = el.dataset.label;
+  const date = el.dataset.date;
+  if (!label) return;
+  const d = new Date(date + 'T12:00:00');
+  const formatted = d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+  tooltip.innerHTML = `<strong>${formatted}</strong><br>${label}`;
+  tooltip.style.display = 'block';
+}
+
+function hideTip() {
+  // keep visible on mobile tap; hide on next mouseleave only after delay
+  setTimeout(() => {
+    document.getElementById('historyTooltip').style.display = 'none';
+  }, 2000);
 }
 
 document.getElementById('weekDate').textContent = getWeekLabel(0);
@@ -608,6 +735,7 @@ loadState();
 renderDays();
 updateStats();
 renderHistory();
+
 </script>
 </body>
 </html>
