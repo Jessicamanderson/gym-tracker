@@ -577,37 +577,43 @@ function showToast(msg) {
 // type: 'lift' | 'yoga' | null
 // WORKOUT_LOG — confirmed from calendar screenshots
 const WORKOUT_LOG = {
+  // May 2026 (visible on June calendar)
+  '2026-05-31': { type: 'yoga', label: 'Vinyasa Flow (Heated)' },
   // June 2026
-  '2026-06-01': { type: 'yoga', label: 'Vinyasa Flow' },
+  '2026-06-01': { type: 'yoga', label: 'Vinyasa Flow (Heated)' },
+  '2026-06-04': { type: 'yoga', label: 'Vinyasa Flow (Heated)' },
   '2026-06-05': { type: 'lift', label: 'Full Body A' },
-  '2026-06-06': { type: 'yoga', label: 'Vinyasa Flow' },
+  '2026-06-06': { type: 'yoga', label: 'Vinyasa Flow (Heated)' },
   '2026-06-08': { type: 'lift', label: 'Full Body A' },
-  '2026-06-09': { type: 'yoga', label: 'Vinyasa Flow' },
-  '2026-06-11': { type: 'yoga', label: 'Vinyasa Flow' },
+  '2026-06-09': { type: 'yoga', label: 'Vinyasa Flow (Heated)' },
+  '2026-06-11': { type: 'yoga', label: 'Vinyasa Flow (Heated)' },
   '2026-06-12': { type: 'lift', label: 'Full Body B' },
-  '2026-06-15': { type: 'lift', label: 'Full Body C' },
-  '2026-06-16': { type: 'yoga', label: 'Vinyasa Flow + Core Breathing' },
-  '2026-06-18': { type: 'yoga', label: 'Vinyasa Flow' },
+  '2026-06-13': { type: 'yoga', label: 'Vinyasa Flow (Heated)' },
+  '2026-06-15': { type: 'yoga', label: 'Vinyasa Flow (Heated)' },
+  '2026-06-16': { type: 'lift', label: 'Full Body C + Core Breathing' },
+  '2026-06-18': { type: 'yoga', label: 'Vinyasa Flow (Heated)' },
   '2026-06-19': { type: 'lift', label: 'Full Body B' },
   '2026-06-22': { type: 'lift', label: 'Full Body A' },
   '2026-06-23': { type: 'yoga', label: 'Power Mat Pilates' },
   '2026-06-24': { type: 'lift', label: 'Full Body B' },
   '2026-06-25': { type: 'lift', label: 'Full Body C' },
   '2026-06-26': { type: 'yoga', label: 'Power Mat Pilates' },
-  // June 29 — St. Padre trip, no workouts
+  // Jun 28–Jul 3 — St. Padre Island trip
   // July 2026
   '2026-07-04': { type: 'yoga', label: 'Power Mat Pilates' },
   '2026-07-05': { type: 'lift', label: 'Full Body A' },
   '2026-07-07': { type: 'yoga', label: 'Power Mat Pilates' },
   '2026-07-08': { type: 'lift', label: 'Full Body B' },
-  // Jul 10–12 Boston/Salem trip
+  // Jul 10–14 — Boston/Salem trip
+  '2026-07-15': { type: 'run', label: 'Running — W2 D1' },
   '2026-07-16': { type: 'run', label: 'Running — W2 D1' },
-  '2026-07-17': { type: 'run', label: 'Running + Power Mat Pilates' },
+  '2026-07-17': { type: 'yoga', label: 'Power Mat Pilates' },
   '2026-07-19': { type: 'yoga', label: 'Power Mat Pilates' },
   '2026-07-21': { type: 'lift', label: 'Full Body A' },
   '2026-07-22': { type: 'lift', label: 'Full Body B' },
   '2026-07-24': { type: 'yoga', label: 'Power Mat Pilates' },
   '2026-07-26': { type: 'yoga', label: 'Power Mat Pilates' },
+  '2026-07-31': { type: 'yoga', label: 'Power Mat Pilates' },
   // August 2026
   '2026-08-01': { type: 'yoga', label: 'Power Mat Pilates' },
   '2026-08-02': { type: 'yoga', label: 'Power Mat Pilates' },
@@ -615,14 +621,15 @@ const WORKOUT_LOG = {
   '2026-08-07': { type: 'yoga', label: 'Power Mat Pilates' },
   '2026-08-09': { type: 'yoga', label: 'Power Mat Pilates' },
   '2026-08-14': { type: 'lift', label: 'Full Body C' },
+  '2026-08-15': { type: 'yoga', label: 'Power Mat Pilates' },
   '2026-08-16': { type: 'yoga', label: 'Power Mat Pilates' },
   '2026-08-19': { type: 'lift', label: 'Full Body A' },
   '2026-08-20': { type: 'lift', label: 'Full Body B' },
-  '2026-08-28': { type: 'lift', label: 'Full Body C' },
-  '2026-08-30': { type: 'lift', label: 'Full Body A' },
+  '2026-08-27': { type: 'lift', label: 'Full Body C' },
+  '2026-08-30': { type: 'yoga', label: 'Power Mat Pilates' },
+  '2026-08-31': { type: 'lift', label: 'Full Body A' },
   // September 2026
-  '2026-09-01': { type: 'lift', label: 'Full Body A' },
-  '2026-09-02': { type: 'lift', label: 'Full Body B' },
+  '2026-09-01': { type: 'lift', label: 'Full Body B' },
   '2026-09-05': { type: 'yoga', label: 'Power Mat Pilates' },
   '2026-09-06': { type: 'yoga', label: 'Power Mat Pilates' },
   '2026-09-08': { type: 'lift', label: 'Full Body C' },
@@ -630,20 +637,23 @@ const WORKOUT_LOG = {
   '2026-09-10': { type: 'lift', label: 'Full Body B' },
   '2026-09-13': { type: 'run', label: 'Running — 2.5 Miles' },
   '2026-09-14': { type: 'run', label: 'Running — 2.5 Miles' },
-  '2026-09-17': { type: 'lift', label: 'Full Body C' },
+  '2026-09-16': { type: 'run', label: 'Running — 2.5 Miles' },
+  '2026-09-16b': { type: 'lift', label: 'Full Body C' },
   '2026-09-21': { type: 'lift', label: 'Full Body A' },
   '2026-09-22': { type: 'lift', label: 'Full Body B' },
   '2026-09-23': { type: 'lift', label: 'Full Body C' },
   // October 2026
-  '2026-10-04': { type: 'lift', label: 'Full Body A' },
+  '2026-10-05': { type: 'lift', label: 'Full Body A' },
   '2026-10-07': { type: 'lift', label: 'Full Body B' },
-  '2026-10-09': { type: 'yoga', label: 'Power Mat Pilates' },
+  '2026-10-10': { type: 'yoga', label: 'Power Mat Pilates' },
+  '2026-10-13': { type: 'yoga', label: 'Core Breathing' },
   '2026-10-14': { type: 'lift', label: 'Full Body C' },
 };
 
 function renderHistory() {
   const container = document.getElementById('historyGrid');
   const months = [
+    { label: 'May', year: 2026, month: 4 },
     { label: 'Jun', year: 2026, month: 5 },
     { label: 'Jul', year: 2026, month: 6 },
     { label: 'Aug', year: 2026, month: 7 },
